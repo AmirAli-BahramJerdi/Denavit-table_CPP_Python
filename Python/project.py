@@ -84,7 +84,7 @@ def P_matrix(T:list) -> list:
     
    
     
-#--formoules--
+#------speed formulas V(liner speed) and W(degree speed)------
 
 
 
@@ -131,8 +131,17 @@ def V(R_i, i, theta, W, d, P):
     np.dot(R_i, np.sum(0,P))
     return np.sum(np.dot(R_i, (np.sum(V(R_i, i-1, theta, W, d, P), W(R_i, i-1, theta)))), np.dot(D, Z))
 
-    
-    
+
+#------Force formulas f(liner force) and n(degree force)------
+
+
+def f_force(R:list, F:float) -> list:
+    F = np.multiply(R,F)
+    return F
+
+def n_force(R:list, N:list, P:list, F:list) -> list:
+    N = np.add(np.multiply(R,N), np.inner(P,F))
+    return N   
 
 #--main--
 
@@ -238,7 +247,7 @@ def main():
     D = np.zeros((3, 1))
     D[2][0] = d[0]
 
-    W=[]
+    W = []
     W.append(np.multiply(t, Z))
         
     for k in range(1,i):
@@ -262,8 +271,38 @@ def main():
         print(f"({k})[V]: ")
         print(V[k]) \
             
-        print(end='\n\n\n')     
+        print(end='\n\n\n')
+    
+    
+    
+    print('-----------------------------')
+    print("f - n calculation: ", end="\n\n")      
+    
+    N = list(np.zeros(i))
+    F = list(np.zeros(i))
+    
+    F[0], N[0] = map(float, input(f"Enter value of [{i}]F[{i}] and [{i}]N[{i}] in order: ").split())    
+    
+    print(N,F)
+    for k in range(i-1,0,-1):
+        F[i-k]=f_force(R[k],F[i-k-1])     
+    
+    for k in range(i-1,0,-1):
+        N[i-k]=n_force(R[k],N[i-k-1], P[i-k-1], F[i-k-1])     
+    
+    
+    for k in range(i-1,-1,-1):
         
+        print(f"{k+1}f{k+1}: ")
+        print(F[k],end='\n\n')      
         
+        print(f"{k+1}[n]{k+1}: ")
+        print(N[k]) 
+            
+        print(end='\n\n\n')
+        
+
+    
+       
 if __name__ == '__main__':
     main()      
